@@ -1,6 +1,9 @@
+let gridSize = 16;
+let drawMode = "default";
+
 function generateGrid(squaresPerSide) {
     let gridContainer = document.querySelector(".grid-container");
-    gridContainer.style.gridTemplateColumns = `repeat(${squaresPerSide}, 1fr)`;
+    gridContainer.style.setProperty("--custom-grid-template-columns", `repeat(${squaresPerSide}, 1fr)`);
 
     if (gridContainer.firstChild) {
         while (gridContainer.firstChild) {
@@ -16,8 +19,24 @@ function generateGrid(squaresPerSide) {
     gridDivs.forEach(div => div.addEventListener("mouseenter", addHighlight));
 };
 
+function getRandomRgbValue() {
+    let red = Math.floor(Math.random() * 255);
+    let green = Math.floor(Math.random() * 255);
+    let blue = Math.floor(Math.random() * 255);
+
+    return `rgb(${red}, ${green}, ${blue})`;
+}
+
 function addHighlight(event) {
-    event.target.classList.add("highlighted");
+    if (!event.target.classList.contains("highlighted")) {
+        event.target.classList.add("highlighted");
+        
+        if (drawMode === "rgb") {
+            event.target.style.setProperty("--square-color", getRandomRgbValue());
+        };
+    };
+
+    console.log(event.target.classList[0]);
 };
 
 function clearGrid() {
@@ -31,7 +50,20 @@ function clearGrid() {
     };
 };
 
-const button = document.querySelector("button");
-button.addEventListener("click", clearGrid);
+function setDrawMode(event) {
+    drawMode = event.target.id;
+};
 
-generateGrid(16);
+const defaultButton = document.querySelector("#default");
+defaultButton.addEventListener("click", setDrawMode);
+
+const gradientButton = document.querySelector("#gradient");
+gradientButton.addEventListener("click", setDrawMode);
+
+const rgbButton = document.querySelector("#rgb");
+rgbButton.addEventListener("click", setDrawMode);
+
+const clearButton = document.querySelector("#clear");
+clearButton.addEventListener("click", clearGrid);
+
+generateGrid(gridSize);

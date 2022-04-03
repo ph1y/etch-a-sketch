@@ -25,18 +25,41 @@ function getRandomRgbValue() {
     let blue = Math.floor(Math.random() * 255);
 
     return `rgb(${red}, ${green}, ${blue})`;
-}
+};
+
+function getNextGradient(currentGradient) {
+    let nextGradient = "";
+    let alphaChannel = 0.1;
+
+    if (!currentGradient) {
+        nextGradient = `rgba(0, 0, 0, ${alphaChannel})`;
+    } else {
+        alphaChannel = parseFloat(currentGradient.substr(14, 3));
+
+        if (alphaChannel <= 0.9) {
+            nextGradient = `rgba(0, 0, 0, ${alphaChannel + 0.1})`;
+        } else {
+            nextGradient = currentGradient;
+        };
+    };
+
+    return nextGradient;
+};
 
 function addHighlight(event) {
     if (!event.target.classList.contains("highlighted")) {
         event.target.classList.add("highlighted");
-        
+
         if (drawMode === "rgb") {
             event.target.style.setProperty("--square-color", getRandomRgbValue());
+        } else if (drawMode === "gradient") {
+            let currentGradient = event.target.style.getPropertyValue("--square-color");
+            event.target.style.setProperty("--square-color", getNextGradient(currentGradient));
         };
+    } else if (event.target.classList.contains("highlighted") && drawMode === "gradient") {
+        let currentGradient = event.target.style.getPropertyValue("--square-color");
+        event.target.style.setProperty("--square-color", getNextGradient(currentGradient));
     };
-
-    console.log(event.target.classList[0]);
 };
 
 function clearGrid() {
